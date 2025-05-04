@@ -13,10 +13,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late Future<List<ProductsResponse>> productsFuture;
+  late Future<List<String>> futureCategory;
+  late Future<List<ProductsResponse>> productsByCategoryFuture;
 
   @override
   void initState() {
     productsFuture = ApiHelper.getProduct(context);
+    futureCategory = ApiHelper.getProductCategory(context);
     super.initState();
   }
 
@@ -34,17 +37,59 @@ class _HomeScreenState extends State<HomeScreen> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.blue,
+        surfaceTintColor: Colors.transparent,
         actions: [
           IconButton(
             icon: Icon(
-              Icons.search,
+              Icons.account_circle,
               color: Colors.white,
             ),
             onPressed: () {},
           ),
         ],
       ),
-      body: products(productsFuture),
+      body: products(
+          productsFuture, futureCategory, modalBottomSheetMenu, restart),
     );
+  }
+
+  void modalBottomSheetMenu(BuildContext context, List<String> lstcategory) {
+    showModalBottomSheet(
+        context: context,
+        builder: (builder) {
+          return Container(
+            height: 300,
+            color: Colors.transparent,
+            child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: const Radius.circular(10.0),
+                        topRight: const Radius.circular(10.0))),
+                child: ListView.builder(
+                    itemCount: lstcategory.length,
+                    itemBuilder: (context, index) {
+                      String categoryName = lstcategory[index];
+                      return ListTile(
+                        leading: Icon(Icons.category), // Category icon
+                        title: Text(lstcategory[index]),
+                        onTap: () {
+                          productsFuture = ApiHelper.getProductBycategoryName(
+                              context, categoryName);
+                          setState(() {
+                            productsFuture;
+                          });
+                          Navigator.pop(context);
+                        },
+                      );
+                    })),
+          );
+        });
+  }
+
+  void restart(BuildContext context) {
+    setState(() {
+      productsFuture = ApiHelper.getProduct(context);
+    });
   }
 }
