@@ -27,7 +27,8 @@ FutureBuilder<List> products(
                           prefixIcon: Icon(Icons.search), // Search icon
                           hintText: "Search", // Placeholder text
                           hintStyle: TextStyle(
-                              color: Colors.grey), // Placeholder text style
+                              color:
+                                  Colors.grey[300]), // Placeholder text style
                           filled: true, // Fill the background
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10))),
