@@ -14,7 +14,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late Future<List<ProductsResponse>> productsFuture;
   late Future<List<String>> futureCategory;
-  late Future<List<ProductsResponse>> productsByCategoryFuture;
+  List<ProductsResponse> lstProduct = [];
+  List<ProductsResponse> lstSearchProduct = [];
+  String searchKeyword = '';
+  final TextEditingController searchController = TextEditingController();
+  FocusNode focusNode = FocusNode();
 
   @override
   void initState() {
@@ -28,11 +32,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       drawer: drawers(context),
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Colors.white, // This makes the drawer icon white
-        ),
+        iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
-        title: Text(
+        title: const Text(
           "Home Screen",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
@@ -40,51 +42,58 @@ class _HomeScreenState extends State<HomeScreen> {
         surfaceTintColor: Colors.transparent,
         actions: [
           IconButton(
-            icon: Icon(
-              Icons.account_circle,
-              color: Colors.white,
-            ),
+            icon: const Icon(Icons.account_circle, color: Colors.white),
             onPressed: () {},
           ),
         ],
       ),
-      body: products(
-          productsFuture, futureCategory, modalBottomSheetMenu, restart),
+      body: lstProducts(
+        productsFuture,
+        futureCategory,
+        lstProduct,
+        lstSearchProduct,
+        modalBottomSheetMenu,
+        restart,
+      ),
     );
   }
 
   void modalBottomSheetMenu(BuildContext context, List<String> lstcategory) {
     showModalBottomSheet(
-        context: context,
-        builder: (builder) {
-          return Container(
-            height: 300,
-            color: Colors.transparent,
-            child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                        topLeft: const Radius.circular(10.0),
-                        topRight: const Radius.circular(10.0))),
-                child: ListView.builder(
-                    itemCount: lstcategory.length,
-                    itemBuilder: (context, index) {
-                      String categoryName = lstcategory[index];
-                      return ListTile(
-                        leading: Icon(Icons.category), // Category icon
-                        title: Text(lstcategory[index]),
-                        onTap: () {
-                          productsFuture = ApiHelper.getProductBycategoryName(
-                              context, categoryName);
-                          setState(() {
-                            productsFuture;
-                          });
-                          Navigator.pop(context);
-                        },
-                      );
-                    })),
-          );
-        });
+      context: context,
+      builder: (builder) {
+        return Container(
+          height: 300,
+          color: Colors.transparent,
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10.0),
+                topRight: Radius.circular(10.0),
+              ),
+            ),
+            child: ListView.builder(
+              itemCount: lstcategory.length,
+              itemBuilder: (context, index) {
+                String categoryName = lstcategory[index];
+                return ListTile(
+                  leading: const Icon(Icons.category),
+                  title: Text(categoryName),
+                  onTap: () {
+                    setState(() {
+                      productsFuture =
+                          ApiHelper.getProductBycategoryName(context, categoryName);
+                    });
+                    Navigator.pop(context);
+                  },
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void restart(BuildContext context) {
