@@ -1,5 +1,6 @@
 import 'package:api/models/products_response.dart';
 import 'package:api/screen/cart_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class ProductsDetail extends StatelessWidget {
@@ -34,12 +35,17 @@ class ProductsDetail extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         // Rounded corners for the image
-                        child: Image.network(
-                          products.image,
+                        child: CachedNetworkImage(
+                          imageUrl: products.image,
                           height: 500,
                           width: double.infinity,
-                          fit:
-                              BoxFit.cover, // Cover the entire area of the card
+                          fit: BoxFit.cover,
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) =>
+                                  CircularProgressIndicator(
+                                      value: downloadProgress.progress),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
                         ),
                       )),
                 ),
@@ -62,6 +68,7 @@ class ProductsDetail extends StatelessWidget {
 
                         Text(
                           products.description,
+                          maxLines: 8,
                           style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.black54),

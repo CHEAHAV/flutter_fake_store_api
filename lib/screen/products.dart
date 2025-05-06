@@ -1,4 +1,5 @@
 import 'package:api/screen/products_detail.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 FutureBuilder<List> products(
@@ -27,8 +28,7 @@ FutureBuilder<List> products(
                           prefixIcon: Icon(Icons.search), // Search icon
                           hintText: "Search", // Placeholder text
                           hintStyle: TextStyle(
-                              color:
-                                  Colors.grey[300]), // Placeholder text style
+                              color: Colors.grey), // Placeholder text style
                           filled: true, // Fill the background
                           border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10))),
@@ -43,24 +43,22 @@ FutureBuilder<List> products(
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: Colors.grey), // Border color
-                        color: Colors.grey[300] // Background color
+                        color: Colors.grey[100] // Background color
                         ),
-                    child: Expanded(
-                      child: Row(
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.filter_list), // Filter icon
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.filter_list), // Filter icon
+                          onPressed: () {
+                            modalBottomSheetMenu(context, snapshot.data![1]);
+                          },
+                        ),
+                        IconButton(
                             onPressed: () {
-                              modalBottomSheetMenu(context, snapshot.data![1]);
+                              restart(context);
                             },
-                          ),
-                          IconButton(
-                              onPressed: () {
-                                restart(context);
-                              },
-                              icon: Icon(Icons.restart_alt)),
-                        ],
-                      ),
+                            icon: Icon(Icons.restart_alt)),
+                      ],
                     ),
                   ),
                 ],
@@ -96,12 +94,16 @@ FutureBuilder<List> products(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
-                              child: Image.network(
-                                products[index].image,
-                                height: 100,
+                              child: CachedNetworkImage(
+                                imageUrl: products[index].image,
                                 width: double.infinity,
-                                fit: BoxFit
-                                    .cover, // Cover the entire area of the card
+                                fit: BoxFit.cover,
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                errorWidget: (context, url, error) =>
+                                    Icon(Icons.error),
                               ),
                             ),
                             Padding(
